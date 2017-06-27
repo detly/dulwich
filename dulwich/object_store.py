@@ -1054,7 +1054,7 @@ class MissingObjectFinder(object):
         if not leaf:
             o = self.object_store[sha]
             if isinstance(o, Commit):
-                self.add_todo([(o.tree, b"", False)])
+                self.add_todo([(o.tree, "", False)])
             elif isinstance(o, Tree):
                 self.add_todo([(s, n, not stat.S_ISDIR(m))
                                for n, m, s in o.iteritems()

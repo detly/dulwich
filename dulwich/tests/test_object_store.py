@@ -54,13 +54,13 @@ from dulwich.tests import (
     )
 from dulwich.tests.utils import (
     make_object,
+    make_commit,
     make_tag,
     build_pack,
     )
 
 
 testobject = make_object(Blob, data=b"yummy data")
-
 
 class ObjectStoreTests(object):
 
@@ -118,6 +118,25 @@ class ObjectStoreTests(object):
         self.assertTrue(testobject.id in self.store)
         r = self.store[testobject.id]
         self.assertEqual(r, testobject)
+
+    def test_generate_pack_contents(self):
+        testblob = make_object(Blob, data=b'testdata')
+        self.store.add_object(testblob)
+
+        testblobs = ((b'testblob', testblob.id, 0o100644),)
+        testtree_id = commit_tree(self.store, testblobs)
+
+        testcommit = make_commit(tree=testtree_id)
+        self.store.add_object(testcommit)
+        
+        contents = self.store.generate_pack_contents((), (testcommit.id,))
+
+        import pdb; pdb.set_trace()
+
+        magic = []
+        for obj, path in contents:
+            magic.append((obj.type_num, path, -obj.raw_length(), obj))
+        magic.sort()
 
     def test_tree_changes(self):
         blob_a1 = make_object(Blob, data=b'a1')
